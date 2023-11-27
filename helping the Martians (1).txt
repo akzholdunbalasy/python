@@ -1,0 +1,43 @@
+import random
+ 
+def initialize_boxes():
+    
+    box_weights = [random.randint(1, 300) for _ in range(3)]
+ 
+    
+    box_positions = [0, 0, 0]
+ 
+    return box_weights, box_positions
+ 
+def move_boxes_with_legs(positions):
+    for i in range(len(positions)):
+        positions[i] = random.randint(1, 7)
+ 
+def is_cargo_found(weights):
+    return sum(weights) == 713
+ 
+box_weights, box_positions = initialize_boxes()
+ 
+print("Martians, welcome to Earth!")
+print("You need to find the buried cargo in 3 boxes.")
+print("Each box has legs that can move them to new locations.")
+ 
+while True:
+    print("\nCurrent positions of the boxes:", box_positions)
+    kilometer_mark = int(input("Enter the kilometer mark (1-7): "))
+ 
+    move_boxes_with_legs(box_positions)
+ 
+   
+    if kilometer_mark in box_positions:
+        index = box_positions.index(kilometer_mark)
+        print(f"Box {index + 1} found at kilometer {kilometer_mark} with weight {box_weights[index]} kg.")
+    else:
+        print("No box found at kilometer", kilometer_mark)
+ 
+    
+    if is_cargo_found(box_weights):
+        print("Congratulations! You found all the boxes with the cargo.")
+        break
+    else:
+        print("The total weight of the found boxes is not 713 kg. Try again.")
