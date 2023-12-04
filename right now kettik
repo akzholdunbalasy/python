@@ -1,0 +1,58 @@
+
+import osimport random
+
+def clear_screen():    os.system('cls' if os.name == 'nt' else 'clear')
+
+def display_grid(grid):    print("   A B C D E F G")
+    for i in range(len(grid)):        print(f"{i+1:2}", end=" ")
+        for j in range(len(grid[i])):            print(grid[i][j], end=" ")
+        print()
+def is_valid(grid, ship, x, y, direction):
+    size = len(ship)    if direction == "h":
+        if y + size > 7:            return False
+        for i in range(size):            if grid[x][y + i] != " ":
+                return False    elif direction == "v":
+        if x + size > 7:            return False
+        for i in range(size):            if grid[x + i][y] != " ":
+                return False    return True
+
+def place_ships(grid):
+    ships = [[3], [2, 2], [1, 1, 1, 1]]
+    for ship in ships:        for size in ship:
+            placed = False            while not placed:
+                x = random.randint(0, 6)                y = random.randint(0, 6)
+                direction = random.choice(["h", "v"])                if is_valid(grid, ship, x, y, direction):
+                    if direction == "h":                        for i in range(size):
+                            grid[x][y + i] = str(size)                    elif direction == "v":
+                        for i in range(size):                            grid[x + i][y] = str(size)
+                    placed = True
+def take_shot(grid):
+    while True:        try:
+            coordinate = input("Enter coordinates to shoot (e.g., B5): ").upper()            x = ord(coordinate[0]) - ord('A')
+            y = int(coordinate[1:]) - 1            if x < 0 or x > 6 or y < 0 or y > 6:
+                print("Invalid coordinates! Try again.")                continue
+            if grid[y][x] in ["X", "O"]:                print("You've already shot there! Try again.")
+                continue            return x, y
+        except (ValueError, IndexError):            print("Invalid input! Try again.")
+
+def play_battleship():    player_name = input("Enter your name: ")
+    player_grid = [[" " for _ in range(7)] for _ in range(7)]    enemy_grid = [[" " for _ in range(7)] for _ in range(7)]
+    place_ships(enemy_grid)
+    shots = 0    while True:
+        clear_screen()        print(f"Player: {player_name}")
+        print("Your grid:")        display_grid(player_grid)
+        print("\nEnemy's grid:")        display_grid(enemy_grid)
+                x, y = take_shot(enemy_grid)
+        if enemy_grid[y][x] == " ":            print("Miss!")
+            player_grid[y][x] = "O"            enemy_grid[y][x] = "O"
+        else:            ship_size = int(enemy_grid[y][x])
+            enemy_grid[y][x] = "X"            player_grid[y][x] = "X"
+            if all(all(cell != str(ship_size) for cell in row) for row in enemy_grid):                print(f"You've sunk a ship of size {ship_size}!")
+                shots += 1
+        if all(all(cell in ["O", "X"] for cell in row) for row in enemy_grid):
+            clear_screen()            print(f"Congratulations, {player_name}! You've sunk all ships in {shots} shots.")
+            play_again = input("Do you want to play again? (yes/no): ").lower()            if play_again == "yes":
+                return play_battleship()            else:
+                              
+                break
+play_battleship()
